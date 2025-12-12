@@ -1,5 +1,6 @@
 package tests;
 
+import base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit5.AllureJunit5;
@@ -12,7 +13,7 @@ import static io.restassured.RestAssured.given;
 
 @ExtendWith(AllureJunit5.class)
 @Tag("SMOKE")
-class GradleSmokeTest {
+class GradleSmokeTest extends BaseTest {
 
     @Test
     @Description("Smoke: Gradle + JUnit5 + RestAssured + Allure работают")
