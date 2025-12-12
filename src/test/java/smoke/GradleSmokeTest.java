@@ -10,25 +10,24 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import static io.restassured.RestAssured.given;
 
-
 @ExtendWith(AllureJunit5.class)
 @Tag("SMOKE")
 class GradleSmokeTest {
 
     @Test
-    @Description("Проверка, что Gradle + JUnit5 + RestAssured + Allure работают")
-    void gradleShouldWork() {
+    @Description("Smoke: Gradle + JUnit5 + RestAssured + Allure работают")
+    void gradleInfrastructureShouldWork() {
         configureRestAssured();
-        sendTestRequest();
+        sendRequest();
     }
 
-    @Step("Настраиваем RestAssured")
+    @Step("Настройка RestAssured")
     void configureRestAssured() {
         RestAssured.baseURI = "https://httpbin.org";
     }
 
-    @Step("Отправляем тестовый GET-запрос")
-    void sendTestRequest() {
+    @Step("Отправка GET запроса и проверка ответа 200")
+    void sendRequest() {
         given()
                 .when()
                 .get("/status/200")

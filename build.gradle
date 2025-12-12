@@ -14,69 +14,50 @@ java {
     }
 }
 
-/* Для корректного отображения кириллицы и других символов */
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
 dependencies {
     // ---------------------------
-    // Логи
-    // ---------------------------
-    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
-
-    // ---------------------------
-    // dotenv (как в pom)
-    // ---------------------------
-    testImplementation 'io.github.cdimascio:dotenv-java:3.0.0'
-
-    // ---------------------------
-    // JUnit 5 (как в pom)
+    // JUnit 5
     // ---------------------------
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-api:1.13.4'
 
     // ---------------------------
-    // UI (то, что было у тебя)
+    // UI
     // ---------------------------
     testImplementation 'com.codeborne:selenide:7.2.1'
 
     // ---------------------------
-    // JSON / Jackson (как в pom)
-    // ---------------------------
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
-
-    // ---------------------------
-    // API (RestAssured + json-path как в pom)
+    // API + JSON
     // ---------------------------
     testImplementation 'io.rest-assured:rest-assured:5.5.0'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.17.2'
     testImplementation 'com.jayway.jsonpath:json-path:2.6.0'
 
     // ---------------------------
-    // Allure (как в pom + то, что было у тебя)
+    // Allure
     // ---------------------------
-    testImplementation 'io.qameta.allure:allure-java-commons:2.20.1'
     testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
     testImplementation 'io.qameta.allure:allure-selenide:2.24.0'
     testImplementation 'io.qameta.allure:allure-rest-assured:2.24.0'
 
     // ---------------------------
-    // Faker (как в pom)
+    // Инфра / утилиты
     // ---------------------------
+    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+    testImplementation 'io.github.cdimascio:dotenv-java:3.0.0'
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
 
     // ---------------------------
-    // DB PostgreSQL (как в pom)
+    // DB + SSH
     // ---------------------------
     testImplementation 'org.postgresql:postgresql:42.7.7'
-
-    // ---------------------------
-    // SSH (JSch как в pom)
-    // ---------------------------
     testImplementation 'com.github.mwiede:jsch:0.2.11'
 
     // ---------------------------
-    // Lombok (правильно для Gradle)
+    // Lombok
     // ---------------------------
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
@@ -84,11 +65,10 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
-test {
+// Общие настройки для всех задач Test (test, myTags, и т.п.)
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
-    // аналогично твоему варианту:
     systemProperties(System.getProperties())
-    // аналог "testFailureIgnore=true" из Maven Surefire:
     ignoreFailures = true
     testLogging {
         events "passed", "skipped", "failed"
@@ -96,28 +76,19 @@ test {
 }
 
 /**
- * Аналог твоей кастомной задачи с тегами:
  * gradle myTags -DcustomTags=SMOKE,POSITIVE
  */
 tasks.register("myTags", Test) {
-    useJUnitPlatform()
-
     String fullTags = System.getProperty("customTags")
-    if (fullTags != null) {
-        String[] tags = fullTags.split(",")
+    if (fullTags != null && !fullTags.trim().isEmpty()) {
         useJUnitPlatform {
-            tags.each { includeTags.add(it.trim()) }
+            fullTags.split(",").each { includeTags.add(it.trim()) }
         }
-    }
-
-    testLogging {
-        events "passed", "skipped", "failed"
     }
 }
 
 /**
- * Allure результаты (куда складывать)
- * По умолчанию у Gradle Allure: build/allure-results
+ * Allure results: build/allure-results
  */
 allure {
     version.set("2.24.0")
