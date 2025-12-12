@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.11.2'
+}
+
+group = 'com.softwarecats'
+version = '1.0'
+
+repositories { mavenCentral() }
+
+/* Для корректного отображения кириллицы и других символов*/
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    // Selenide
+    testImplementation 'com.codeborne:selenide:7.2.1'
+    // Allure интеграции
+    testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
+    testImplementation 'io.qameta.allure:allure-selenide:2.24.0'
+    // Логи
+    testImplementation 'org.slf4j:slf4j-simple:2.0.12'
+    testImplementation 'org.projectlombok:lombok:1.18.30'
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+}
+
+tasks.register("myTags", Test.class) {
+    String fullTags = System.getProperty("customTags")
+    if (fullTags != null) {
+        String[] tags = fullTags.split(",")
+        useJUnitPlatform {
+            for (String tag : tags) {
+                includeTags.add(tag)
+            }
+        }
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+}
+
+
